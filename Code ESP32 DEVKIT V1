@@ -1,0 +1,127 @@
+ESP32 DEVKIT V1
+
+const int flexpin1 = 12;
+const int flexpin2 = 14;
+const int flexpin3 = 27;
+const int flexpin4 = 26;
+const int flexpin5 = 25;
+const float VCC = 5;
+const float R_DIV = 10000.0;
+const float flatResistance = 33000.0;
+const float bendResistance = 13000.0;
+
+#define WINDOW_SIZE 5
+int INDEX = 0;
+
+int VALUE1 = 0;
+int VALUE2 = 0;
+int VALUE3 = 0;
+int VALUE4 = 0;
+int VALUE5 = 0;
+
+int SUM1 = 0;
+int SUM2 = 0;
+int SUM3 = 0;
+int SUM4 = 0;
+int SUM5 = 0;
+
+int READINGS1[WINDOW_SIZE];
+int READINGS2[WINDOW_SIZE];
+int READINGS3[WINDOW_SIZE];
+int READINGS4[WINDOW_SIZE];
+int READINGS5[WINDOW_SIZE];
+
+int AVERAGED1 = 0;
+int AVERAGED2 = 0;
+int AVERAGED3 = 0;
+int AVERAGED4 = 0;
+int AVERAGED5 = 0;
+
+void setup(){
+  Serial.begin(9600);
+  pinMode(flexpin1,INPUT);
+  pinMode(flexpin2,INPUT);
+  pinMode(flexpin3,INPUT);  
+  pinMode(flexpin4,INPUT);
+  pinMode(flexpin5,INPUT);
+}
+
+void loop(){
+
+  SUM1 = SUM1 - READINGS1[INDEX];       // Subtrai do somatório anterior (SUM1) a leitura mais antiga (READINGS1[INDEX]).
+  VALUE1 = analogRead(flexpin1);        // Lê o próximo valor do sensor 1.
+  READINGS1[INDEX] = VALUE1;            // Adiciona a leitura mais recente (VALUE1) à janela de leitura 1 (READINGS1) na posição INDEX.
+  SUM1 = SUM1 + VALUE1;                 // Adiciona a leitura mais recente (VALUE1) ao somatório atual (SUM1).
+  INDEX = (INDEX+1) % WINDOW_SIZE;      // Incrementa o índice (INDEX) e o faz retornar para 0 se exceder o tamanho da janela (WINDOW_SIZE).
+  AVERAGED1 = SUM1 / WINDOW_SIZE;       // Calcula a média móvel da janela de leitura 1 (READINGS1) a partir do somatório atual (SUM1) dividido pelo tamanho da janela (WINDOW_SIZE).
+
+  SUM2 = SUM2 - READINGS2[INDEX];       
+  VALUE2 = analogRead(flexpin2);        
+  READINGS2[INDEX] = VALUE2;            
+  SUM2 = SUM2 + VALUE2;                 
+  AVERAGED2 = SUM2 / WINDOW_SIZE; 
+  
+  SUM3 = SUM3 - READINGS3[INDEX];       
+  VALUE3 = analogRead(flexpin3);        
+  READINGS3[INDEX] = VALUE3;            
+  SUM3 = SUM3 + VALUE3;                 
+  AVERAGED3 = SUM3 / WINDOW_SIZE; 
+
+  SUM4 = SUM4 - READINGS4[INDEX];       
+  VALUE4 = analogRead(flexpin4);        
+  READINGS4[INDEX] = VALUE4;            
+  SUM4 = SUM4 + VALUE4;                 
+  AVERAGED4 = SUM4 / WINDOW_SIZE; 
+  
+  SUM5 = SUM5 - READINGS5[INDEX];       
+  VALUE5 = analogRead(flexpin5);       
+  READINGS5[INDEX] = VALUE5;            
+  SUM5 = SUM5 + VALUE5;                 
+  AVERAGED5 = SUM5 / WINDOW_SIZE; 
+
+  int ADCflex1 = AVERAGED1;
+  float Vflex1 = ADCflex1*VCC/1023.0;
+  float Rflex1 = R_DIV*(VCC/Vflex1-1.0);
+
+  int ADCflex2 = AVERAGED2;
+  float Vflex2 = ADCflex2*VCC/1023.0;
+  float Rflex2 = R_DIV*(VCC/Vflex2-1.0);
+
+  int ADCflex3 = AVERAGED3;
+  float Vflex3 = ADCflex3*VCC/1023.0;
+  float Rflex3 = R_DIV*(VCC/Vflex3-1.0);
+  
+  int ADCflex4 = AVERAGED4;
+  float Vflex4 = ADCflex4*VCC/1023.0;
+  float Rflex4 = R_DIV*(VCC/Vflex4-1.0);
+
+  
+  int ADCflex5 = AVERAGED5;
+  float Vflex5 = ADCflex5*VCC/1023.0;
+  float Rflex5 = R_DIV*(VCC/Vflex5-1.0);
+  
+  
+  float angle1 = map(Rflex1, flatResistance, bendResistance, 0,90.0);
+  float angle2 = map(Rflex2, flatResistance, bendResistance, 0,90.0);
+  float angle3 = map(Rflex3, flatResistance, bendResistance, 0,90.0);
+  float angle4 = map(Rflex4, flatResistance, bendResistance, 0,90.0);
+  float angle5 = map(Rflex5, flatResistance, bendResistance, 0,90.0);
+  
+
+  Serial.print("Angulo 1: ");
+  Serial.print(angle1);
+  Serial.print(" Graus; Angulo 2: ");
+  Serial.print(angle2);
+  Serial.println(" Graus");
+  Serial.print("Angulo 3: ");
+  Serial.print(angle3);
+  Serial.print(" Graus; Angulo 4: ");
+  Serial.print(angle4);
+  Serial.println(" Graus");
+  Serial.print("Angulo 5: ");
+  Serial.print(angle5);
+  Serial.println(" Graus");
+  
+
+  delay(30);
+}
