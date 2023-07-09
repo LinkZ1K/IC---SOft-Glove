@@ -1,0 +1,45 @@
+using System.Collections;
+using UnityEngine;
+using System.IO.Ports;
+
+public class ESP32Input : MonoBehaviour
+{
+    SerialPort data_stream = new SerialPort("COM5", 9600); // Transferencia de dados
+    public string receivedstring1, receivedstring2, receivedstring3, receivedstring4, receivedstring5;
+    public float sensitivity = 0.001f;
+    public Transform object1, object2, object3, object4, object5;
+
+    void Start()
+    {
+        data_stream.Open();
+    }
+
+    void Update()
+    {
+        // Primeira leitura
+        receivedstring1 = data_stream.ReadLine();
+        int received_angle1 = Mathf.RoundToInt(float.Parse(receivedstring1));
+        object1.transform.localEulerAngles = new Vector3(0, 0, (-received_angle1 * sensitivity));
+
+        // Segunda leitura
+        receivedstring2 = data_stream.ReadLine();
+        int received_angle2 = Mathf.RoundToInt(float.Parse(receivedstring2));
+        object2.transform.localEulerAngles = new Vector3(0, 0, (-received_angle2 * sensitivity));
+
+           // Terceira leitura
+        receivedstring3 = data_stream.ReadLine();
+        int received_angle3 = Mathf.RoundToInt(float.Parse(receivedstring3));
+        object3.transform.localEulerAngles = new Vector3(0, 0, (-received_angle3 * sensitivity));
+
+           // Quarta leitura
+        receivedstring4 = data_stream.ReadLine();
+        int received_angle4 = Mathf.RoundToInt(float.Parse(receivedstring4));
+        object4.transform.localEulerAngles = new Vector3(0, 0, (-received_angle4 * sensitivity));
+
+           // Quinta leitura
+        receivedstring5 = data_stream.ReadLine();
+        int received_angle5 = Mathf.RoundToInt(float.Parse(receivedstring5));
+        object5.transform.localEulerAngles = new Vector3(0, 0, (-received_angle5 * sensitivity));
+        
+    }
+}
